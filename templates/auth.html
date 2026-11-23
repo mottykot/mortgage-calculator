@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{{ 'יצירת חשבון' if mode == 'register' else 'התחברות' }} | מחשבון המשכנתא</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;background:linear-gradient(135deg,#10264a,#315da8);font-family:Heebo,Arial,sans-serif;color:#17243b}
+    .panel{width:min(100%,430px);background:white;border-radius:22px;padding:34px;box-shadow:0 24px 70px #06152d55}.logo{font-size:42px;text-align:center}.title{text-align:center;margin:4px 0 5px;font-size:27px;font-weight:800}.sub{text-align:center;color:#718096;margin:0 0 25px;font-size:14px}
+    label{display:block;font-weight:600;margin:15px 0 6px}input{width:100%;padding:13px 14px;border:1px solid #dbe2ee;border-radius:10px;font:inherit;font-size:16px;outline:none}input:focus{border-color:#3867e8;box-shadow:0 0 0 3px #3867e822}
+    button{width:100%;margin-top:22px;padding:13px;border:0;border-radius:10px;background:linear-gradient(100deg,#3867e8,#6949dc);color:white;font:700 16px Heebo;cursor:pointer}.switch{text-align:center;margin:20px 0 0;font-size:14px;color:#718096}.switch a{color:#3867e8;font-weight:700;text-decoration:none}.flash{padding:10px 12px;border-radius:9px;background:#fff0f0;color:#a12d36;margin:10px 0;font-size:14px}
+  </style>
+</head>
+<body><main class="panel">
+  <div class="logo">🏡</div>
+  <h1 class="title">מחשבון המשכנתא</h1>
+  <p class="sub">{{ 'יוצרים חשבון ושומרים את התמהילים שלך' if mode == 'register' else 'ברוכים השבים! התחבר לחשבון שלך' }}</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="flash">{{ message }}</div>{% endfor %}{% endwith %}
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="email">כתובת מייל</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="name@example.com">
+    <label for="password">סיסמה</label><input id="password" name="password" type="password" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required minlength="8" placeholder="לפחות 8 תווים">
+    <button type="submit">{{ 'יצירת חשבון' if mode == 'register' else 'התחברות' }}</button>
+  </form>
+  <p class="switch">{{ 'כבר יש לך חשבון?' if mode == 'register' else 'עדיין אין לך חשבון?' }} <a href="{{ url_for('login' if mode == 'register' else 'register') }}">{{ 'להתחברות' if mode == 'register' else 'להרשמה' }}</a></p>
+</main></body></html>
+
+<!-- Injection By NetFree -->
+<script src="https://netfree.link/injection-script/note-in-site.js" type="text/javascript" async  id="netfree-note-site" jsondata="%7B%22noteSite%22:%22%D7%9B%D7%93%D7%99%20%D7%A9%D7%94%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%20%D7%94%D7%96%D7%94%20%D7%99%D7%97%D7%96%D7%A8%D7%95%20%D7%9E%D7%91%D7%93%D7%99%D7%A7%D7%94%2C%20%D7%99%D7%A9%20%D7%9C%D7%94%D7%92%D7%93%D7%99%D7%A8%20%5C%22%D7%90%D7%A4%D7%A9%D7%A8%20%D7%9C%D7%A9%D7%9C%D7%95%D7%97%20%D7%9C%D7%91%D7%93%D7%99%D7%A7%D7%94%20%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%D7%99%D7%9D%20%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D%2C%20%D7%91%D7%9E%D7%A7%D7%95%D7%9D%20%D7%9C%D7%97%D7%A1%D7%95%D7%9D%20%D7%90%D7%95%D7%AA%D7%9F%5C%22%20%D7%91%D7%94%D7%92%D7%93%D7%A8%D7%95%D7%AA%20%D7%A1%D7%99%D7%A0%D7%95%D7%9F%20%5B%5B%D7%A6%D7%90%D7%98_AI_%D7%91%D7%A0%D7%98%D7%A4%D7%A8%D7%99%7C%D7%94%D7%99%D7%9B%D7%A0%D7%A1%D7%95%20%D7%9C%D7%9B%D7%90%D7%9F%20%D7%9C%D7%94%D7%A1%D7%91%D7%A8%20%D7%9E%D7%A4%D7%95%D7%A8%D7%98%5D%5D%22%2C%22noteSiteEn%22:%22For%20images%20on%20this%20website%20to%20work%20you%20need%20to%20set%20%5C%22Allow%20images%20on%20private%20sites%20to%20be%20sent%20for%20review%2C%20instead%20of%20blocking%20them%5C%22%20%5B%5BAI_Chats_in_NetFree%7CClick%20here%20to%20read%20more%5D%5D%22%7D"></script><script src="//netfree.link/injection-script/go-payment.js" type="text/javascript" async ></script>
+<script src="//netfree.link/injection-script/popup-card-init.js" type="text/javascript" async ></script>
