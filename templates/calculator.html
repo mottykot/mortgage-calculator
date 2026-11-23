@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>מחשבון מסלולי משכנתא</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A6%3C/text%3E%3C/svg%3E">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg:#f3f6fb;
+  --card:#fff;
+  --text:#17243b;
+  --muted:#718096;
+  --border:#e5eaf2;
+  --blue:#3867e8;
+  --green:#159b78;
+  --shadow:0 8px 30px rgba(30,50,90,.06);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Heebo',Arial,sans-serif;
+}
+
+header{
+  background:linear-gradient(120deg,#172d55,#294d91);
+  color:white;
+  padding:34px 20px 42px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:29px;
+  font-weight:800;
+}
+
+header p{
+  margin:8px 0 0;
+  color:#d2def5;
+  font-size:14px;
+}
+
+.container{
+  max-width:1450px;
+  margin:-18px auto 40px;
+  padding:0 22px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:17px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.top-card{margin-bottom:22px}
+
+.card-head{
+  padding:20px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:13px;
+  flex-wrap:wrap;
+}
+
+.card-head-main{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  flex:1;
+  min-width:220px;
+}
+
+.icon{
+  width:43px;
+  height:43px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:21px;
+  background:#edf2ff;
+  flex-shrink:0;
+}
+
+.card-head h2{
+  font-size:18px;
+  margin:0;
+  font-weight:700;
+}
+
+.card-head p{
+  font-size:12px;
+  color:var(--muted);
+  margin:2px 0 0;
+}
+
+.card-body{padding:22px}
+
+.fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
+}
+
+.fields-single{
+  grid-template-columns:minmax(0,1fr);
+}
+
+.field{min-width:0}
+
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:#53627a;
+  margin-bottom:6px;
+}
+
+.field input{
+  width:100%;
+  height:43px;
+  border:1px solid #dce3ef;
+  border-radius:9px;
+  padding:0 12px;
+  font:inherit;
+  font-size:15px;
+  color:var(--text);
+  background:#fbfcfe;
+  outline:none;
+  direction:ltr;
+  text-align:right;
+}
+
+.field input.rtl-input{
+  direction:rtl;
+  text-align:right;
+}
+
+.field input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(56,103,232,.10);
+  background:white;
+}
+
+.preset-bar{
+  margin-top:18px;
+  padding:15px 16px;
+  background:#f8faff;
+  border:1px solid #e5ebfa;
+  border-radius:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.preset-name-field{
+  flex:1 1 240px;
+  min-width:200px;
+}
+
+.preset-name-field label{
+  display:block;
+  font-size:12px;
+  font-weight:600;
+  color:#53627a;
+  margin-bottom:6px;
+}
+
+.preset-name-field input{
+  width:100%;
+  height:40px;
+  border:1px solid #dce3ef;
+  border-radius:8px;
+  padding:0 12px;
+  font:inherit;
+  font-size:14px;
+  background:white;
+  color:var(--text);
+}
+
+.preset-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.btn-primary{
+  height:40px;
+  border:1px solid var(--blue);
+  background:var(--blue);
+  color:white;
+  border-radius:8px;
+  padding:0 15px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-primary:hover{
+  background:#2855d4;
+}
+
+.btn-secondary{
+  height:40px;
+  border:1px solid #d5e0f5;
+  background:white;
+  color:var(--blue);
+  border-radius:8px;
+  padding:0 14px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-secondary:hover{
+  background:#edf2ff;
+}
+
+.btn-green{
+  height:38px;
+  border:1px solid var(--green);
+  background:var(--green);
+  color:white;
+  border-radius:8px;
+  padding:0 14px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.btn-green:hover{
+  background:#118163;
+}
+
+.btn-green:disabled{
+  background:#9aa4b2;
+  border-color:#9aa4b2;
+  cursor:not-allowed;
+}
+
+.saved-presets-list{
+  margin-top:14px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.preset-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:white;
+  border:1px solid #dce3ef;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.preset-chip.active-chip{
+  border-color:var(--blue);
+  background:#edf2ff;
+  color:var(--blue);
+}
+
+.preset-chip button{
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  padding:0 2px;
+}
+
+.preset-chip .load-chip-btn{
+  color:var(--blue);
+}
+
+.preset-chip .del-chip-btn{
+  color:#c24135;
+}
+
+.allocation-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+  margin-top:22px;
+}
+
+.allocation{
+  background:#f8faff;
+  border:1px solid #e5ebfa;
+  border-radius:12px;
+  padding:14px;
+}
+
+.allocation label{
+  display:block;
+  font-size:12px;
+  color:#53627a;
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.allocation input{
+  width:100%;
+  height:40px;
+  border:1px solid #dce3ef;
+  border-radius:8px;
+  padding:0 10px;
+  font:inherit;
+  direction:ltr;
+  text-align:right;
+}
+
+.allocation small{
+  display:block;
+  color:var(--muted);
+  margin-top:7px;
+  font-size:12px;
+}
+
+.allocation-total{
+  margin-top:18px;
+  padding:13px 16px;
+  background:#f5f8ff;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.allocation-total strong{font-size:17px}
+
+.warning{
+  color:#c24135;
+  font-size:13px;
+  margin-top:10px;
+  display:none;
+}
+
+.summary{
+  background:linear-gradient(120deg,#172d55,#294d91);
+  color:white;
+  border-radius:15px;
+  padding:23px;
+  margin-bottom:22px;
+  display:grid;
+  grid-template-columns:1.2fr 1fr 1fr auto;
+  gap:18px;
+  align-items:center;
+}
+
+.summary-label{
+  color:#d2def5;
+  font-size:13px;
+}
+
+.summary-value{
+  font-size:29px;
+  font-weight:800;
+  margin-top:3px;
+}
+
+.summary-small{
+  font-size:21px;
+  font-weight:700;
+  margin-top:5px;
+}
+
+.breakdown-btn{
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.14);
+  color:white;
+  padding:12px 16px;
+  border-radius:10px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.breakdown-btn:hover{
+  background:rgba(255,255,255,.24);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:22px;
+}
+
+.card-body .fields{margin-bottom:0}
+
+.results{
+  margin-top:23px;
+  background:#f5f8ff;
+  border:1px solid #e5ebfa;
+  border-radius:13px;
+  padding:17px;
+}
+
+.result-main{
+  text-align:center;
+  padding-bottom:15px;
+  border-bottom:1px solid #dfe7f5;
+}
+
+.result-main span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.result-main strong{
+  display:block;
+  color:var(--blue);
+  font-size:29px;
+  font-weight:800;
+  margin-top:2px;
+}
+
+.result-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 10px;
+  padding-top:15px;
+}
+
+.result-item span{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.result-item strong{
+  display:block;
+  font-size:16px;
+  margin-top:3px;
+  font-weight:700;
+}
+
+.result-item.total{
+  grid-column:1/-1;
+  padding-top:12px;
+  border-top:1px solid #dfe7f5;
+}
+
+.result-item.total strong{
+  color:var(--green);
+  font-size:21px;
+}
+
+.track-breakdown-btn{
+  margin-top:14px;
+  border:1px solid #d5e0f5;
+  background:white;
+  color:var(--text);
+  padding:9px 14px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  width:100%;
+}
+
+.track-breakdown-btn:hover{
+  background:#edf2ff;
+  color:var(--blue);
+}
+
+.schedule-info{
+  background:#f7f9fd;
+  border:1px solid var(--border);
+  padding:13px;
+  border-radius:10px;
+  margin-top:17px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+
+.schedule-info p{
+  margin:0;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.schedule-btn{
+  border:1px solid #d5e0f5;
+  background:white;
+  color:var(--blue);
+  padding:10px 15px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  width:100%;
+}
+
+.schedule-btn:hover{
+  background:#edf2ff;
+}
+
+.allocation-label{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:12px;
+}
+
+.note{
+  margin-top:13px;
+  font-size:11px;
+  color:#7b8799;
+  line-height:1.6;
+}
+
+/* השוואת תמהילים שמורים */
+
+.comparison-card{
+  margin-top:24px;
+}
+
+.comparison-table-wrap{
+  overflow-x:auto;
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.comparison-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.comparison-table th{
+  background:#f2f5fa;
+  color:#53627a;
+  font-size:12px;
+  padding:12px 10px;
+  text-align:right;
+  white-space:nowrap;
+}
+
+.comparison-table td{
+  padding:11px 10px;
+  border-bottom:1px solid #edf0f5;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.row-action-btn{
+  border:1px solid #d5e0f5;
+  background:white;
+  color:var(--blue);
+  border-radius:6px;
+  padding:5px 10px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  margin-left:6px;
+}
+
+.row-action-btn:hover{
+  background:#edf2ff;
+}
+
+.row-del-btn{
+  border:1px solid #f3d2cf;
+  background:#fff7f6;
+  color:#c24135;
+  border-radius:6px;
+  padding:5px 10px;
+  font-family:inherit;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.row-del-btn:hover{
+  background:#fdeceb;
+}
+
+/* גרפים */
+
+.chart-card{
+  margin-top:24px;
+}
+
+.chart-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.chart-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  font-size:12px;
+  color:var(--text);
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:600;
+}
+
+.legend-dot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.chart-wrap{
+  position:relative;
+  background:#fafcff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+}
+
+#tracksChart,
+#presetsMonthlyChart{
+  width:100%;
+  height:360px;
+  display:block;
+}
+
+.chart-tooltip{
+  position:fixed;
+  pointer-events:none;
+  background:rgba(23,36,59,.95);
+  color:white;
+  padding:10px 13px;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.6;
+  box-shadow:0 10px 25px rgba(0,0,0,.22);
+  z-index:900;
+  display:none;
+  min-width:190px;
+}
+
+.footer{
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* חלונות מודאל */
+
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(15,29,53,.55);
+  z-index:1000;
+  justify-content:center;
+  align-items:center;
+  padding:15px;
+}
+
+.modal-overlay.open{display:flex}
+
+.modal{
+  width:100%;
+  max-width:650px;
+  max-height:90vh;
+  overflow:hidden;
+  background:white;
+  border-radius:17px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  display:flex;
+  flex-direction:column;
+}
+
+.modal-wide{
+  max-width:960px;
+}
+
+.modal-header{
+  padding:19px 22px;
+  background:linear-gradient(120deg,#172d55,#294d91);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.modal-header h2{
+  margin:0;
+  font-size:19px;
+}
+
+.close-btn{
+  background:transparent;
+  border:none;
+  color:white;
+  font-size:25px;
+  cursor:pointer;
+}
+
+.modal-content{
+  padding:20px;
+  overflow-y:auto;
+}
+
+.mode-switch{
+  display:flex;
+  background:#f0f3f9;
+  padding:4px;
+  border-radius:10px;
+  gap:5px;
+  margin-bottom:18px;
+}
+
+.mode-switch button{
+  flex:1;
+  border:none;
+  border-radius:8px;
+  padding:10px 5px;
+  font-family:inherit;
+  font-size:13px;
+  cursor:pointer;
+  background:transparent;
+  color:#64748b;
+}
+
+.mode-switch button.active{
+  background:white;
+  color:var(--blue);
+  font-weight:700;
+  box-shadow:0 2px 7px rgba(0,0,0,.07);
+}
+
+.average-box{
+  padding:16px;
+  background:#f5f8ff;
+  border:1px solid #e5ebfa;
+  border-radius:11px;
+}
+
+.average-box label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.average-box input{
+  width:100%;
+  height:43px;
+  border:1px solid #dce3ef;
+  border-radius:8px;
+  padding:0 12px;
+  font:inherit;
+  direction:ltr;
+  text-align:right;
+}
+
+.year-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.year-table th{
+  background:#f2f5fa;
+  color:#53627a;
+  font-size:12px;
+  padding:12px 8px;
+  text-align:right;
+  position:sticky;
+  top:0;
+  z-index:1;
+  white-space:nowrap;
+}
+
+.year-table td{
+  padding:9px 8px;
+  border-bottom:1px solid #edf0f5;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.year-table input{
+  width:100%;
+  min-width:65px;
+  height:37px;
+  border:1px solid #dce3ef;
+  border-radius:7px;
+  padding:0 7px;
+  font:inherit;
+  direction:ltr;
+  text-align:right;
+}
+
+.year-table input:disabled{
+  background:#f1f3f6;
+  color:#9aa4b2;
+}
+
+.year-table-wrap{
+  max-height:48vh;
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:9px;
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.stat-box{
+  background:#f5f8ff;
+  border:1px solid #e5ebfa;
+  border-radius:11px;
+  padding:14px;
+}
+
+.stat-box span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.stat-box strong{
+  display:block;
+  font-size:20px;
+  font-weight:800;
+  color:var(--text);
+  margin-top:4px;
+}
+
+.modal-footer{
+  padding:15px 20px;
+  border-top:1px solid var(--border);
+  display:flex;
+  gap:10px;
+}
+
+.modal-footer button{
+  flex:1;
+  padding:12px;
+  border-radius:9px;
+  font-family:inherit;
+  font-weight:700;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.save-btn{
+  background:var(--blue);
+  color:white;
+  border:1px solid var(--blue);
+}
+
+.export-btn{
+  background:var(--green);
+  color:white;
+  border:1px solid var(--green);
+}
+
+.export-btn:disabled{
+  background:#9aa4b2;
+  border-color:#9aa4b2;
+  cursor:not-allowed;
+}
+
+.cancel-btn{
+  background:white;
+  color:#53627a;
+  border:1px solid var(--border);
+}
+
+
+/* הדגשת מסלולים המשתתפים בתמהיל הפעיל */
+.track-card.track-included{
+  border:2px solid #159b78;
+  box-shadow:0 0 0 4px rgba(21,155,120,.14),0 12px 32px rgba(21,155,120,.12);
+  transform:translateY(-2px);
+}
+.track-card.track-included .card-head{
+  background:linear-gradient(90deg,rgba(21,155,120,.10),transparent 75%);
+}
+.track-card.track-included .card-head::after{
+  content:'✓ נכלל בתמהיל';
+  margin-right:auto;
+  color:#087b5e;
+  background:#d9f7eb;
+  border:1px solid #9de5c9;
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.track-card{transition:border-color .2s,box-shadow .2s,transform .2s,background .2s}
+
+/* מתג מצב תצוגה */
+header{position:relative}
+.theme-toggle{
+  position:absolute;
+  top:16px;
+  left:18px;
+  border:1px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.13);
+  color:#fff;
+  border-radius:9px;
+  padding:9px 13px;
+  font:600 13px 'Heebo',Arial,sans-serif;
+  cursor:pointer;
+}
+.theme-toggle:hover{background:rgba(255,255,255,.24)}
+
+/* ערכת צבעים כהה */
+body.dark-mode{
+  --bg:#101827;
+  --card:#182438;
+  --text:#e7edf7;
+  --muted:#a6b4c8;
+  --border:#33435b;
+  --blue:#7da2ff;
+  --green:#35c69b;
+  --shadow:0 8px 30px rgba(0,0,0,.22);
+  color-scheme:dark;
+}
+body.dark-mode .card,
+body.dark-mode .modal{background:var(--card);color:var(--text);border-color:var(--border)}
+body.dark-mode .card-head{border-color:var(--border)}
+body.dark-mode .card-head p,
+body.dark-mode .field label,
+body.dark-mode .allocation label,
+body.dark-mode .preset-name-field label{color:#b5c2d5}
+body.dark-mode .icon{background:#263754}
+body.dark-mode .field input,
+body.dark-mode .allocation input,
+body.dark-mode .preset-name-field input,
+body.dark-mode .average-box input,
+body.dark-mode .year-table input{
+  background:#101a2a;color:var(--text);border-color:#40516b
+}
+body.dark-mode .field input:focus{background:#152238}
+body.dark-mode .preset-bar,
+body.dark-mode .allocation,
+body.dark-mode .allocation-total,
+body.dark-mode .results,
+body.dark-mode .schedule-info,
+body.dark-mode .chart-wrap,
+body.dark-mode .average-box,
+body.dark-mode .stat-box{
+  background:#202e43;border-color:#3a4b64;color:var(--text)
+}
+body.dark-mode .preset-chip,
+body.dark-mode .track-breakdown-btn,
+body.dark-mode .schedule-btn,
+body.dark-mode .btn-secondary,
+body.dark-mode .row-action-btn,
+body.dark-mode .cancel-btn{
+  background:#24334a;color:#dce7f8;border-color:#465a78
+}
+body.dark-mode .preset-chip.active-chip{background:#263d68;color:#a9c1ff;border-color:#789cff}
+body.dark-mode .preset-chip .load-chip-btn{color:#a9c1ff}
+body.dark-mode .btn-secondary:hover,
+body.dark-mode .track-breakdown-btn:hover,
+body.dark-mode .schedule-btn:hover,
+body.dark-mode .row-action-btn:hover{background:#30435f}
+body.dark-mode .comparison-table-wrap,
+body.dark-mode .year-table-wrap{border-color:var(--border)}
+body.dark-mode .comparison-table th,
+body.dark-mode .year-table th{background:#26364d;color:#d2deef}
+body.dark-mode .comparison-table td,
+body.dark-mode .year-table td{border-color:#33435b;color:var(--text)}
+body.dark-mode .year-table input:disabled{background:#2b394d;color:#8795aa}
+body.dark-mode .mode-switch{background:#202e43}
+body.dark-mode .mode-switch button{color:#b4c1d3}
+body.dark-mode .mode-switch button.active{background:#354967;color:#c4d4ff}
+body.dark-mode .result-main{border-color:#3a4b64}
+body.dark-mode .result-main strong{color:#91b0ff}
+body.dark-mode .result-item.total{border-color:#3a4b64}
+body.dark-mode .result-item.total strong{color:#49d2a8}
+body.dark-mode .track-card.track-included{border-color:#35c69b;box-shadow:0 0 0 4px rgba(53,198,155,.15),0 12px 32px rgba(0,0,0,.25)}
+body.dark-mode .track-card.track-included .card-head{background:linear-gradient(90deg,rgba(53,198,155,.14),transparent 75%)}
+body.dark-mode .track-card.track-included .card-head::after{color:#8ff0cd;background:#174638;border-color:#287c61}
+body.dark-mode .chart-legend{color:var(--text)}
+body.dark-mode .note,
+body.dark-mode .footer{color:#9eacc0}
+body.dark-mode .modal-content{background:var(--card);color:var(--text)}
+body.dark-mode .modal-footer{border-color:var(--border)}
+body.dark-mode .modal-footer .cancel-btn{background:#24334a;color:#dce7f8}
+body.dark-mode .modal-header{color:#fff}
+body.dark-mode .warning{color:#ff938b}
+@media(max-width:550px){
+  .theme-toggle{position:static;margin-top:14px}
+  header{padding-top:24px}
+  .track-card.track-included .card-head::after{font-size:10px;padding:4px 7px}
+}
+
+@media(max-width:1100px){
+  .allocation-grid{grid-template-columns:repeat(3,1fr)}
+  .summary{grid-template-columns:1fr 1fr}
+  .breakdown-btn{grid-column:1/-1;width:100%}
+}
+
+@media(max-width:850px){
+  .grid{grid-template-columns:1fr}
+  .allocation-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:550px){
+  .container{padding:0 12px}
+  .card-body{padding:16px}
+  .summary{grid-template-columns:1fr 1fr}
+  .summary > div:first-child{grid-column:1/-1}
+  .allocation-grid{gap:9px}
+  .allocation{padding:10px}
+  .modal-content{padding:14px}
+  .stats-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="account-bar" style="background:#10264a;color:#fff;padding:10px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px">
+  <span>מחובר בתור: <strong>{{ current_user_email }}</strong></span>
+  <form method="post" action="{{ url_for('logout') }}" style="margin:0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" style="border:1px solid #ffffff66;background:#ffffff18;color:white;border-radius:8px;padding:7px 13px;cursor:pointer;font:inherit">התנתקות</button>
+  </form>
+</div>
+
+<header>
+  <h1>מחשבון מסלולי משכנתא</h1>
+  <p>השוואה וחישוב החזרי משכנתא בחמשת המסלולים המרכזיים</p>
+  <button type="button" class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="מעבר לתצוגה כהה">🌙 תצוגה כהה</button>
+</header>
+
+<main class="container">
+
+<!-- סכום כולל, שמירת תמהילים והקצאת המסלולים -->
+
+<section class="card top-card">
+  <div class="card-head">
+    <div class="icon">🏦</div>
+    <div>
+      <h2>תמהיל המשכנתא</h2>
+      <p>הגדרת סכום המשכנתא, החלוקה בין המסלולים ושמירת תמהילים להשוואה</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <div class="fields fields-single">
+      <div class="field">
+        <label>סכום המשכנתא הכולל (₪)</label>
+        <input type="number" id="totalLoan"
+          value="1000000" min="0" step="1000">
+      </div>
+    </div>
+
+    <div class="preset-bar">
+      <div class="preset-name-field">
+        <label for="presetNameInput">שם התמהיל הפעיל / לשמירה</label>
+        <input type="text" id="presetNameInput" class="rtl-input"
+          placeholder="לדוגמה: תמהיל א' / תמהיל ב'">
+      </div>
+      <div class="preset-actions">
+        <button type="button" class="btn-primary" onclick="saveCurrentPreset()">
+          💾 שמירה / עדכון תמהיל
+        </button>
+        <button type="button" class="btn-secondary" onclick="duplicateCurrentPreset()">
+          📄 שכפול תמהיל לתמהיל חדש
+        </button>
+        <button type="button" class="btn-secondary" onclick="startNewPreset()">
+          ➕ תמהיל חדש מאופס
+        </button>
+      </div>
+    </div>
+
+    <div class="saved-presets-list" id="savedPresetsChips"></div>
+
+    <div class="allocation-grid">
+
+      <div class="allocation">
+        <label>קבועה לא צמודה (%)</label>
+        <input type="number" id="alloc-fixed"
+          value="20" min="0" max="100" step="1">
+        <small id="amount-fixed">200,000 ₪</small>
+      </div>
+
+      <div class="allocation">
+        <label>משתנה לא צמודה (%)</label>
+        <input type="number" id="alloc-variable"
+          value="20" min="0" max="100" step="1">
+        <small id="amount-variable">200,000 ₪</small>
+      </div>
+
+      <div class="allocation">
+        <label>קבועה צמודת מדד (%)</label>
+        <input type="number" id="alloc-indexed"
+          value="20" min="0" max="100" step="1">
+        <small id="amount-indexed">200,000 ₪</small>
+      </div>
+
+      <div class="allocation">
+        <label>משתנה צמודת מדד (%)</label>
+        <input type="number" id="alloc-varIndexed"
+          value="20" min="0" max="100" step="1">
+        <small id="amount-varIndexed">200,000 ₪</small>
+      </div>
+
+      <div class="allocation">
+        <label>פריים (%)</label>
+        <input type="number" id="alloc-prime"
+          value="20" min="0" max="100" step="1">
+        <small id="amount-prime">200,000 ₪</small>
+      </div>
+
+    </div>
+
+    <div class="allocation-total">
+      <span>סה"כ הקצאת המשכנתא</span>
+      <strong id="allocationSum">100%</strong>
+    </div>
+
+    <div class="warning" id="allocationWarning">
+      שים לב: סכום האחוזים חייב להיות 100%, וסכום המשכנתא ומספר השנים בכל מסלול חייבים להיות תקינים (1–50).
+    </div>
+
+  </div>
+</section>
+
+<!-- סיכום כולל -->
+
+<section class="summary">
+  <div>
+    <div class="summary-label">ההחזר החודשי הכולל</div>
+    <div class="summary-value" id="combinedPayment">₪0</div>
+  </div>
+
+  <div>
+    <div class="summary-label">סכום המשכנתא</div>
+    <div class="summary-small" id="summaryPrincipal">₪0</div>
+  </div>
+
+  <div>
+    <div class="summary-label">סך ההחזרים הכולל</div>
+    <div class="summary-small" id="combinedTotal">₪0</div>
+  </div>
+
+  <div>
+    <button class="breakdown-btn" onclick="openMonthlyBreakdown('combined')">
+      📊 פירוט חודשי ונתונים
+    </button>
+  </div>
+</section>
+
+<!-- חמשת המסלולים -->
+
+<div class="grid">
+
+<!-- קבועה -->
+
+<section class="card track-card" id="fixed">
+  <div class="card-head">
+    <div class="icon">🔒</div>
+    <div>
+      <h2>ריבית קבועה לא צמודה</h2>
+      <p>החזר קבוע לאורך כל תקופת ההלוואה</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="fields">
+      <div class="field">
+        <label>ריבית שנתית (%)</label>
+        <input type="number" data-field="rate"
+          value="5" step="0.01">
+      </div>
+      <div class="field">
+        <label>מספר שנים במסלול</label>
+        <input type="number" data-field="years"
+          value="30" min="1" max="50" step="1">
+      </div>
+    </div>
+
+    <div class="allocation-label" id="principal-fixed"></div>
+    <div class="results" id="result-fixed"></div>
+  </div>
+</section>
+
+<!-- משתנה לא צמודה -->
+
+<section class="card track-card" id="variable">
+  <div class="card-head">
+    <div class="icon">🔄</div>
+    <div>
+      <h2>ריבית משתנה לא צמודה</h2>
+      <p>ריבית בסיס בתוספת מרווח ותחזית שנתית</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="fields">
+      <div class="field">
+        <label>הריבית כיום (%)</label>
+        <input type="number" data-field="rate"
+          value="4" step="0.01">
+      </div>
+      <div class="field">
+        <label>מרווח מהעוגן (%)</label>
+        <input type="number" data-field="margin"
+          value="1" step="0.01">
+      </div>
+      <div class="field">
+        <label>עדכון הריבית כל כמה שנים?</label>
+        <input type="number" data-field="resetYears"
+          value="1" min="1" max="50" step="1">
+      </div>
+      <div class="field">
+        <label>מספר שנים במסלול</label>
+        <input type="number" data-field="years"
+          value="30" min="1" max="50" step="1">
+      </div>
+    </div>
+
+    <div class="schedule-info">
+      <p>התחזית נשארת שנתית, אך הריבית בפועל תתעדכן רק בתדירות שהגדרת. השינויים השנתיים יצטברו עד למועד העדכון.</p>
+      <button class="schedule-btn"
+        onclick="openSchedule('variable')">
+        ⚙ הגדרת תחזית ריבית שנתית
+      </button>
+    </div>
+
+    <div class="allocation-label" id="principal-variable"></div>
+    <div class="results" id="result-variable"></div>
+  </div>
+</section>
+
+<!-- קבועה צמודה -->
+
+<section class="card track-card" id="indexed">
+  <div class="card-head">
+    <div class="icon">📈</div>
+    <div>
+      <h2>ריבית קבועה צמודת מדד</h2>
+      <p>ריבית קבועה בתוספת הצמדה למדד המחירים לצרכן</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="fields">
+      <div class="field">
+        <label>ריבית שנתית (%)</label>
+        <input type="number" data-field="rate"
+          value="3" step="0.01">
+      </div>
+      <div class="field">
+        <label>מספר שנים במסלול</label>
+        <input type="number" data-field="years"
+          value="30" min="1" max="50" step="1">
+      </div>
+    </div>
+
+    <div class="schedule-info">
+      <p>הגדר את שיעור עליית המדד הצפוי לאורך השנים</p>
+      <button class="schedule-btn"
+        onclick="openSchedule('indexed')">
+        ⚙ הגדרת תחזית מדד שנתית
+      </button>
+    </div>
+
+    <div class="allocation-label" id="principal-indexed"></div>
+    <div class="results" id="result-indexed"></div>
+  </div>
+</section>
+
+<!-- משתנה צמודת מדד -->
+
+<section class="card track-card" id="varIndexed">
+  <div class="card-head">
+    <div class="icon">📉</div>
+    <div>
+      <h2>ריבית משתנה צמודת מדד</h2>
+      <p>ריבית בסיס, מרווח ותדירות עדכון בשילוב הצמדה למדד</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="fields">
+      <div class="field">
+        <label>הריבית כיום (%)</label>
+        <input type="number" data-field="rate"
+          value="3.5" step="0.01">
+      </div>
+      <div class="field">
+        <label>מרווח מהעוגן (%)</label>
+        <input type="number" data-field="margin"
+          value="0.5" step="0.01">
+      </div>
+      <div class="field">
+        <label>עדכון הריבית כל כמה שנים?</label>
+        <input type="number" data-field="resetYears"
+          value="5" min="1" max="50" step="1">
+      </div>
+      <div class="field">
+        <label>מספר שנים במסלול</label>
+        <input type="number" data-field="years"
+          value="30" min="1" max="50" step="1">
+      </div>
+    </div>
+
+    <div class="schedule-info">
+      <p>הגדר את הצפי להשתנות הריבית ואת הצפי לעליית המדד לאורך השנים</p>
+      <button class="schedule-btn"
+        onclick="openSchedule('varIndexed_rate')">
+        ⚙ הגדרת תחזית ריבית שנתית
+      </button>
+      <button class="schedule-btn"
+        onclick="openSchedule('varIndexed_index')">
+        ⚙ הגדרת תחזית מדד שנתית
+      </button>
+    </div>
+
+    <div class="allocation-label" id="principal-varIndexed"></div>
+    <div class="results" id="result-varIndexed"></div>
+  </div>
+</section>
+
+<!-- פריים -->
+
+<section class="card track-card" id="prime">
+  <div class="card-head">
+    <div class="icon">⚡</div>
+    <div>
+      <h2>מסלול פריים</h2>
+      <p>ריבית הפריים בתוספת או הפחתת מרווח</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="fields">
+      <div class="field">
+        <label>ריבית פריים כיום (%)</label>
+        <input type="number" data-field="rate"
+          value="5.5" step="0.01">
+      </div>
+      <div class="field">
+        <label>מרווח מהפריים (%)</label>
+        <input type="number" data-field="margin"
+          value="-0.5" step="0.01">
+      </div>
+      <div class="field">
+        <label>מספר שנים במסלול</label>
+        <input type="number" data-field="years"
+          value="30" min="1" max="50" step="1">
+      </div>
+    </div>
+
+    <div class="schedule-info">
+      <p>הגדר את השינוי הצפוי בריבית הפריים לאורך השנים</p>
+      <button class="schedule-btn"
+        onclick="openSchedule('prime')">
+        ⚙ הגדרת תחזית ריבית פריים שנתית
+      </button>
+    </div>
+
+    <div class="allocation-label" id="principal-prime"></div>
+    <div class="results" id="result-prime"></div>
+  </div>
+</section>
+
+</div>
+
+<!-- השוואה בין תמהילים שמורים -->
+
+<section class="card comparison-card">
+  <div class="card-head">
+    <div class="card-head-main">
+      <div class="icon">⚖️</div>
+      <div>
+        <h2>השוואה בין תמהילים שמורים</h2>
+        <p>השוואת תשלום חודשי ראשון, אחרון, מקסימלי, מינימלי וסך ההחזרים בין כלל התמהילים ששמרת</p>
+      </div>
+    </div>
+    <button type="button" class="btn-green" id="exportComparisonCsvBtn" onclick="exportPresetsComparisonCsv()">
+      📥 ייצוא טבלת השוואה ל-CSV
+    </button>
+  </div>
+
+  <div class="card-body" id="presetsComparisonBody"></div>
+</section>
+
+<!-- גרף השוואת החזר חודשי בין התמהילים השמורים לאורך השנים -->
+
+<section class="card chart-card">
+  <div class="card-head">
+    <div class="icon">📊</div>
+    <div>
+      <h2>השוואת ההחזר החודשי לאורך השנים בין התמהילים השמורים</h2>
+      <p>החזר חודשי ממוצע בכל שנה עבור כל תמהיל שמור לאורך תקופת המשכנתא</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="chart-toolbar">
+      <div class="chart-legend" id="presetsMonthlyLegend"></div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="presetsMonthlyChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- גרף השוואה בין מסלולים לאורך השנים -->
+
+<section class="card chart-card">
+  <div class="card-head">
+    <div class="icon">📈</div>
+    <div>
+      <h2>השוואת תשלומים בין המסלולים לאורך השנים</h2>
+      <p>סך ההחזר השנתי הצפוי בכל מסלול לפי שנות המשכנתא (בהתאם להקצאה שנקבעה לכל מסלול)</p>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="chart-toolbar">
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="tracksChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  מחשבון להמחשה בלבד | © כל הזכויות שמורות
+</div>
+
+</main>
+
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<!-- חלון הגדרת תחזית -->
+
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h2 id="modalTitle">הגדרת תחזית שנתית</h2>
+      <button class="close-btn" onclick="closeSchedule()">×</button>
+    </div>
+
+    <div class="modal-content">
+
+      <div class="mode-switch">
+        <button id="annualMode" class="active"
+          onclick="setMode('annual')">
+          פירוט לפי שנים
+        </button>
+        <button id="averageMode"
+          onclick="setMode('average')">
+          ממוצע שנתי
+        </button>
+      </div>
+
+      <div id="averageContent" style="display:none">
+        <div class="average-box">
+          <label id="averageLabel">שינוי שנתי ממוצע (%)</label>
+          <input type="number" id="averageValue"
+            value="0" step="0.1">
+          <p class="note">
+            הערך שתזין יוחל בכל שנה בתקופת המסלול.
+          </p>
+        </div>
+      </div>
+
+      <div id="annualContent">
+        <p class="note" id="tableExplanation">
+          הגדר את השינוי הצפוי בכל שנה בנפרד.
+        </p>
+
+        <div class="year-table-wrap">
+          <table class="year-table">
+            <thead>
+              <tr>
+                <th>שנה</th>
+                <th id="tableLabel">שינוי צפוי (%)</th>
+              </tr>
+            </thead>
+            <tbody id="yearRows"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="cancel-btn"
+        onclick="closeSchedule()">ביטול</button>
+      <button class="save-btn"
+        onclick="saveSchedule()">שמירת תחזית</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- חלון פירוט חודשי ונתונים -->
+
+<div class="modal-overlay" id="breakdownModal">
+  <div class="modal modal-wide">
+
+    <div class="modal-header">
+      <h2 id="breakdownModalTitle">פירוט החזר חודשי ונתונים מסכמים</h2>
+      <button class="close-btn" onclick="closeMonthlyBreakdown()">×</button>
+    </div>
+
+    <div class="modal-content" id="breakdownContent"></div>
+
+    <div class="modal-footer">
+      <button class="export-btn" id="exportCsvBtn" onclick="exportMonthlyCsv()">
+        📥 ייצוא לקובץ CSV
+      </button>
+      <button class="cancel-btn" onclick="closeMonthlyBreakdown()">סגירה</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+// ==================================================
+// נתוני המערכת
+// ==================================================
+
+let scheduleData = {
+  variable: {
+    mode:'annual',
+    average:0,
+    values:[]
+  },
+  indexed: {
+    mode:'annual',
+    average:2,
+    values:[]
+  },
+  varIndexed_rate: {
+    mode:'annual',
+    average:0,
+    values:[]
+  },
+  varIndexed_index: {
+    mode:'annual',
+    average:2,
+    values:[]
+  },
+  prime: {
+    mode:'annual',
+    average:0,
+    values:[]
+  }
+};
+
+const titles = {
+  variable:'תחזית ריבית משתנה לא צמודה',
+  indexed:'תחזית עליית מדד',
+  varIndexed_rate:'תחזית ריבית משתנה צמודת מדד',
+  varIndexed_index:'תחזית עליית מדד (משתנה צמודה)',
+  prime:'תחזית ריבית פריים'
+};
+
+const labels = {
+  variable:'שינוי בריבית (%)',
+  indexed:'עליית המדד (%)',
+  varIndexed_rate:'שינוי בריבית (%)',
+  varIndexed_index:'עליית המדד (%)',
+  prime:'שינוי בריבית (%)'
+};
+
+const scheduleToTrack = {
+  variable:'variable',
+  indexed:'indexed',
+  varIndexed_rate:'varIndexed',
+  varIndexed_index:'varIndexed',
+  prime:'prime'
+};
+
+const trackMeta = {
+  fixed: { name:'קבועה לא צמודה', color:'#3867e8' },
+  variable: { name:'משתנה לא צמודה', color:'#0ea5e9' },
+  indexed: { name:'קבועה צמודת מדד', color:'#159b78' },
+  varIndexed: { name:'משתנה צמודת מדד', color:'#d97706' },
+  prime: { name:'פריים', color:'#7c3aed' }
+};
+
+const presetPalette = [
+  '#3867e8',
+  '#159b78',
+  '#d97706',
+  '#e11d48',
+  '#7c3aed',
+  '#0891b2',
+  '#4f46e5',
+  '#65a30d'
+];
+
+const ids = ['fixed','variable','indexed','varIndexed','prime'];
+const STORAGE_KEY = 'mortgage_saved_presets_v2';
+
+let savedPresets = [];
+let activePresetId = null;
+let currentSchedule = null;
+let temporaryData = null;
+let yearsInModal = 30;
+let lastCombinedMonthlySchedule = null;
+let trackMonthlyScheduleMap = {};
+let activeBreakdownScope = 'combined';
+let chartState = null;
+let presetsMonthlyChartState = null;
+
+// ==================================================
+// פונקציות עזר
+// ==================================================
+
+const money = value =>
+  new Intl.NumberFormat('he-IL',{
+    style:'currency',
+    currency:'ILS',
+    maximumFractionDigits:0
+  }).format(value);
+
+const numberValue = (element) =>
+  Number(element.value);
+
+function getTrackYears(trackId) {
+  const card = document.getElementById(trackId);
+  const input = card ? card.querySelector('[data-field="years"]') : null;
+  return input ? Number(input.value) : 30;
+}
+
+function isValidYears(years) {
+  return Number.isInteger(years) && years >= 1 && years <= 50;
+}
+
+function payment(balance, annualRate, months) {
+  if (!Number.isFinite(balance) || !Number.isFinite(annualRate) ||
+      !Number.isFinite(months) || months <= 0 || balance < 0) return NaN;
+
+  const r = annualRate / 1200;
+  if (Math.abs(r) < 1e-10) return balance / months;
+
+  // שימוש ב-expm1 מונע אובדן דיוק בריביות קטנות מאוד
+  const denominator = -Math.expm1(-months * Math.log1p(r));
+  if (!Number.isFinite(denominator) || denominator <= 0) return NaN;
+
+  return balance * r / denominator;
+}
+
+function getScheduleValueFrom(sourceSchedules, type, year) {
+  const data = sourceSchedules[type];
+  if (!data) return 0;
+
+  if (data.mode === 'average') {
+    return Number(data.average) || 0;
+  }
+
+  return Number((data.values && data.values[year-1]) || 0);
+}
+
+function getScheduleValue(type, year) {
+  return getScheduleValueFrom(scheduleData, type, year);
+}
+
+function isIndexSchedule(type) {
+  return type === 'indexed' || type === 'varIndexed_index';
+}
+
+// ==================================================
+// הקצאת סכומי ההלוואה
+// ==================================================
+
+function getPrincipal(id) {
+  const total = numberValue(
+    document.getElementById('totalLoan')
+  );
+
+  const percentage = numberValue(
+    document.getElementById('alloc-'+id)
+  );
+
+  return total * percentage / 100;
+}
+
+
+function applyTrackHighlights() {
+  ids.forEach(id => {
+    const card = document.getElementById(id);
+    const allocationInput = document.getElementById('alloc-' + id);
+    const included = allocationInput && Number(allocationInput.value) > 0;
+    if (card) card.classList.toggle('track-included', !!included);
+  });
+}
+
+function applyTheme(theme) {
+  const dark = theme === 'dark';
+  document.body.classList.toggle('dark-mode', dark);
+  const button = document.getElementById('themeToggle');
+  if (button) {
+    button.textContent = dark ? '☀️ תצוגה בהירה' : '🌙 תצוגה כהה';
+    button.setAttribute('aria-label', dark ? 'מעבר לתצוגה בהירה' : 'מעבר לתצוגה כהה');
+  }
+}
+
+function toggleTheme() {
+  const nextTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+  applyTheme(nextTheme);
+  try { localStorage.setItem('mortgage_display_theme', nextTheme); } catch (e) {}
+}
+
+function loadTheme() {
+  let theme = 'light';
+  try { theme = localStorage.getItem('mortgage_display_theme') || 'light'; } catch (e) {}
+  applyTheme(theme);
+}
+
+function updateAllocation(syncActive = true) {
+
+  const total = numberValue(
+    document.getElementById('totalLoan')
+  );
+
+  let sum = 0;
+  let allTracksYearsValid = true;
+
+  ids.forEach(id => {
+
+    const percentage = numberValue(
+      document.getElementById('alloc-'+id)
+    );
+
+    sum += percentage;
+
+    const amount = total * percentage / 100;
+
+    document.getElementById('amount-'+id).textContent =
+      money(amount);
+
+    document.getElementById('principal-'+id).textContent =
+      'סכום ההלוואה במסלול: '+money(amount);
+
+    const trackYears = getTrackYears(id);
+    // מסלול שאינו מוקצה בתמהיל (0%) אינו אמור לחסום את החישוב הכולל.
+    if (percentage > 0 && !isValidYears(trackYears)) {
+      allTracksYearsValid = false;
+    }
+  });
+
+  applyTrackHighlights();
+
+  document.getElementById('allocationSum').textContent =
+    sum.toFixed(2)+'%';
+
+  const valid = Math.abs(sum-100)<0.0001 &&
+    total > 0 &&
+    allTracksYearsValid;
+
+  document.getElementById('allocationWarning').style.display =
+    valid ? 'none' : 'block';
+
+  if (syncActive && activePresetId) {
+    syncActivePresetState();
+    renderPresetsComparison();
+  }
+
+  calculateAll();
+}
+
+// ==================================================
+// סימולציה חודשית
+// ==================================================
+
+function simulateWithSchedules(type, principal, years, v, sourceSchedules) {
+
+  if (!Number.isFinite(principal) ||
+      principal < 0 ||
+      !isValidYears(years)) {
+    return null;
+  }
+
+  const months = years*12;
+
+  if (principal === 0) {
+    const emptyRows = [];
+    for (let m = 1; m <= months; m++) {
+      emptyRows.push({
+        month: m,
+        year: Math.ceil(m / 12),
+        monthInYear: ((m - 1) % 12) + 1,
+        payment: 0,
+        principalPaid: 0,
+        interestAndIndexPaid: 0,
+        endingBalance: 0
+      });
+    }
+    return {
+      firstPayment:0,
+      lastPayment:0,
+      totalPaid:0,
+      totalInterest:0,
+      totalIndex:0,
+      principal:0,
+      monthlyRows:emptyRows
+    };
+  }
+
+  let balance = principal;
+  let totalPaid = 0;
+  let totalInterest = 0;
+  let totalIndex = 0;
+
+  let firstPayment = 0;
+  let lastPayment = 0;
+
+  let currentRate = v.rate;
+
+  if (type === 'variable' || type === 'varIndexed' || type === 'prime') {
+    currentRate += v.margin;
+  }
+
+  if (!Number.isFinite(currentRate) || currentRate < 0) return null;
+
+  const resetYears = (type === 'variable' || type === 'varIndexed')
+    ? Math.max(1, Math.min(50, Math.floor(Number(v.resetYears) || 1)))
+    : 1;
+
+  let lastRateUpdateYear = 1;
+
+  let monthlyPayment = payment(
+    balance,currentRate,months
+  );
+  if (!Number.isFinite(monthlyPayment)) return null;
+
+  const rateScheduleKey = type === 'varIndexed' ? 'varIndexed_rate' : type;
+  const indexScheduleKey = type === 'varIndexed' ? 'varIndexed_index' : 'indexed';
+  const monthlyRows = [];
+
+  for(let month=1; month<=months; month++) {
+
+    const year = Math.ceil(month/12);
+    const monthInYear = ((month - 1) % 12) + 1;
+
+    if (
+      (type === 'variable' || type === 'varIndexed' || type === 'prime') &&
+      month > 1 &&
+      (month-1)%12 === 0 &&
+      (type === 'prime' || (year-1)%resetYears === 0)
+    ) {
+
+      let accumulatedChange = 0;
+
+      for (
+        let forecastYear = lastRateUpdateYear + 1;
+        forecastYear <= year;
+        forecastYear++
+      ) {
+        accumulatedChange += getScheduleValueFrom(sourceSchedules, rateScheduleKey, forecastYear);
+      }
+
+      currentRate = Math.max(0, currentRate + accumulatedChange);
+      lastRateUpdateYear = year;
+
+      monthlyPayment = payment(
+        balance,
+        currentRate,
+        months-month+1
+      );
+      if (!Number.isFinite(monthlyPayment)) return null;
+    }
+
+    let monthIndexAddition = 0;
+
+    if(type === 'indexed' || type === 'varIndexed') {
+
+      const annualInflation =
+        getScheduleValueFrom(sourceSchedules, indexScheduleKey, year);
+
+      if(annualInflation <= -100) return null;
+
+      const monthlyIndex =
+        Math.pow(1+annualInflation/100,1/12);
+
+      const oldBalance = balance;
+
+      balance *= monthlyIndex;
+
+      monthIndexAddition = balance - oldBalance;
+      totalIndex += monthIndexAddition;
+
+      monthlyPayment = payment(
+        balance,
+        currentRate,
+        months-month+1
+      );
+      if (!Number.isFinite(monthlyPayment)) return null;
+    }
+
+    const interest = balance*currentRate/1200;
+
+    let actualPayment = monthlyPayment;
+
+    if(actualPayment > balance+interest) {
+      actualPayment = balance+interest;
+    }
+
+    const principalPaid = actualPayment-interest;
+
+    balance -= principalPaid;
+
+    if(balance < 0.01) balance=0;
+
+    totalInterest += interest;
+    totalPaid += actualPayment;
+
+    monthlyRows.push({
+      month,
+      year,
+      monthInYear,
+      payment: actualPayment,
+      principalPaid,
+      interestAndIndexPaid: interest + monthIndexAddition,
+      endingBalance: balance
+    });
+
+    if(month===1) firstPayment=actualPayment;
+    if(month===months) lastPayment=actualPayment;
+  }
+
+  return {
+    firstPayment,
+    lastPayment,
+    totalPaid,
+    totalInterest,
+    totalIndex,
+    principal,
+    monthlyRows
+  };
+}
+
+function simulate(type, principal, years, v) {
+  return simulateWithSchedules(type, principal, years, v, scheduleData);
+}
+
+// ==================================================
+// חישוב תמהיל שלם (עבור התמהיל הנוכחי או תמהיל שמור)
+// ==================================================
+
+function evaluateMixState(mixState) {
+  const totalLoan = Number(mixState.totalLoan);
+  const allocations = mixState.allocations || {};
+  const tracks = mixState.tracks || {};
+  const schedules = mixState.schedules || {};
+
+  const percentages = ids.map(id => Number(allocations[id] ?? 0));
+  const percentageSum = percentages.reduce((sum, value) => sum + value, 0);
+  const totalIsValid = Number.isFinite(totalLoan) && totalLoan > 0;
+  const allocationsAreValid = percentages.every(value =>
+    Number.isFinite(value) && value >= 0 && value <= 100
+  );
+
+  let activeTracksValid = true;
+  let maxMonths = 0;
+  const resultsById = {};
+
+  ids.forEach((id, index) => {
+    const pct = percentages[index];
+    const principal = totalIsValid && Number.isFinite(pct)
+      ? totalLoan * pct / 100
+      : 0;
+    const tVal = tracks[id] || {};
+    const v = {
+      rate: Number(tVal.rate ?? 0),
+      margin: Number(tVal.margin ?? 0),
+      resetYears: Number(tVal.resetYears ?? 1),
+      years: Number(tVal.years ?? 30)
+    };
+
+    const active = principal > 0;
+    const yearsValid = isValidYears(v.years);
+    if (active && !yearsValid) activeTracksValid = false;
+    if (active && yearsValid) maxMonths = Math.max(maxMonths, v.years * 12);
+
+    const sim = yearsValid
+      ? simulateWithSchedules(id, principal, v.years, v, schedules)
+      : null;
+
+    if (active && (!sim || !Number.isFinite(sim.firstPayment) ||
+        !Number.isFinite(sim.totalPaid))) {
+      activeTracksValid = false;
+    }
+
+    resultsById[id] = { principal, years: v.years, result: sim };
+  });
+
+  const valid = Math.abs(percentageSum - 100) < 0.0001 &&
+    totalIsValid &&
+    allocationsAreValid &&
+    activeTracksValid;
+
+  let combinedFirst = 0;
+  let combinedTotal = 0;
+  let combinedSchedule = null;
+
+  if (valid && maxMonths > 0) {
+    combinedSchedule = Array.from({ length: maxMonths }, (_, index) => ({
+      month: index + 1,
+      year: Math.ceil((index + 1) / 12),
+      monthInYear: (index % 12) + 1,
+      payment: 0,
+      principalPaid: 0,
+      interestAndIndexPaid: 0,
+      endingBalance: 0
+    }));
+  }
+
+  ids.forEach(id => {
+    const res = resultsById[id].result;
+    if (res && resultsById[id].principal > 0) {
+      combinedFirst += res.firstPayment;
+      combinedTotal += res.totalPaid;
+      if (combinedSchedule) {
+        res.monthlyRows.forEach((r, i) => {
+          if (!combinedSchedule[i]) return;
+          combinedSchedule[i].payment += r.payment || 0;
+          combinedSchedule[i].principalPaid += r.principalPaid || 0;
+          combinedSchedule[i].interestAndIndexPaid += r.interestAndIndexPaid || 0;
+          combinedSchedule[i].endingBalance += r.endingBalance || 0;
+        });
+      }
+    }
+  });
+
+  let firstExpected = null;
+  let lastExpected = null;
+  let maxPayment = null;
+  let minPayment = null;
+
+  if (valid && combinedSchedule && combinedSchedule.length > 0) {
+    const payments = combinedSchedule.map(r => r.payment);
+    firstExpected = payments[0];
+    lastExpected = payments[payments.length - 1];
+    maxPayment = Math.max(...payments);
+    minPayment = Math.min(...payments);
+  }
+
+  return {
+    valid,
+    totalLoan,
+    resultsById,
+    combinedFirst,
+    combinedTotal,
+    combinedSchedule,
+    firstExpected,
+    lastExpected,
+    maxPayment,
+    minPayment
+  };
+}
+
+// ==================================================
+// שמירה עצמאית לכל תמהיל, טעינה והשוואה
+// ==================================================
+
+function captureCurrentMixState() {
+  const allocations = {};
+  const tracks = {};
+
+  ids.forEach(id => {
+    allocations[id] = Number(document.getElementById('alloc-' + id).value);
+    const card = document.getElementById(id);
+    const values = {};
+    card.querySelectorAll('[data-field]').forEach(input => {
+      values[input.dataset.field] = Number(input.value);
+    });
+    tracks[id] = values;
+  });
+
+  return {
+    totalLoan: Number(document.getElementById('totalLoan').value),
+    allocations,
+    tracks,
+    schedules: JSON.parse(JSON.stringify(scheduleData))
+  };
+}
+
+function applyMixState(mixState) {
+  if (!mixState) return;
+
+  if (mixState.totalLoan !== undefined) {
+    document.getElementById('totalLoan').value = mixState.totalLoan;
+  }
+
+  if (mixState.allocations) {
+    ids.forEach(id => {
+      if (mixState.allocations[id] !== undefined) {
+        document.getElementById('alloc-' + id).value = mixState.allocations[id];
+      }
+    });
+  }
+
+  if (mixState.tracks) {
+    ids.forEach(id => {
+      const tVal = mixState.tracks[id];
+      if (!tVal) return;
+      const card = document.getElementById(id);
+      Object.keys(tVal).forEach(field => {
+        const input = card.querySelector(`[data-field="${field}"]`);
+        if (input) input.value = tVal[field];
+      });
+    });
+  }
+
+  if (mixState.schedules) {
+    scheduleData = JSON.parse(JSON.stringify(mixState.schedules));
+  }
+
+  updateAllocation(false);
+}
+
+function syncActivePresetState() {
+  if (!activePresetId) return;
+  const idx = savedPresets.findIndex(p => p.id === activePresetId);
+  if (idx === -1) return;
+  savedPresets[idx].state = captureCurrentMixState();
+  persistSavedPresets();
+}
+
+let presetSaveQueue = Promise.resolve();
+
+async function loadSavedPresetsFromServer() {
+  const response = await fetch('/api/presets', { credentials: 'same-origin' });
+  if (!response.ok) throw new Error('לא ניתן לטעון את התמהילים השמורים');
+  const data = await response.json();
+  savedPresets = Array.isArray(data.presets) ? data.presets : [];
+
+  // העברה חד-פעמית של תמהילים ישנים מהמחשב, אם עדיין אין תמהילים בחשבון.
+  if (savedPresets.length === 0) {
+    try {
+      const oldData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (Array.isArray(oldData) && oldData.length) {
+        savedPresets = oldData;
+        await persistSavedPresets();
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    } catch (e) {
+      console.warn('לא ניתן להעביר תמהילים מקומיים:', e);
+    }
+  }
+}
+
+function persistSavedPresets() {
+  const payload = JSON.stringify(savedPresets);
+  presetSaveQueue = presetSaveQueue.then(async () => {
+    const response = await fetch('/api/presets', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: payload
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || 'שמירת התמהילים נכשלה');
+    }
+    return response;
+  }).catch(error => {
+    console.error(error);
+    alert('לא הצלחנו לשמור את התמהילים בשרת. בדוק את החיבור ונסה שוב.');
+  });
+  return presetSaveQueue;
+}
+
+function saveCurrentPreset() {
+  const nameInput = document.getElementById('presetNameInput');
+  const rawName = (nameInput.value || '').trim();
+  const activeObj = activePresetId ? savedPresets.find(p => p.id === activePresetId) : null;
+  const name = rawName || (activeObj ? activeObj.name : ('תמהיל ' + (savedPresets.length + 1)));
+
+  const state = captureCurrentMixState();
+  let existingIndex = -1;
+
+  if (activePresetId) {
+    existingIndex = savedPresets.findIndex(p => p.id === activePresetId);
+  }
+  if (existingIndex === -1) {
+    existingIndex = savedPresets.findIndex(p => p.name === name);
+  }
+
+  const presetId = existingIndex >= 0
+    ? savedPresets[existingIndex].id
+    : ('preset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6));
+
+  const presetRecord = {
+    id: presetId,
+    name,
+    state
+  };
+
+  if (existingIndex >= 0) {
+    savedPresets[existingIndex] = presetRecord;
+  } else {
+    savedPresets.push(presetRecord);
+  }
+
+  activePresetId = presetId;
+  nameInput.value = name;
+  persistSavedPresets();
+  renderPresetsComparison();
+}
+
+function duplicateCurrentPreset() {
+  const state = captureCurrentMixState();
+  const newName = 'תמהיל ' + (savedPresets.length + 1);
+  const newId = 'preset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+
+  savedPresets.push({
+    id: newId,
+    name: newName,
+    state
+  });
+
+  activePresetId = newId;
+  document.getElementById('presetNameInput').value = newName;
+  persistSavedPresets();
+  renderPresetsComparison();
+}
+
+function loadPresetById(presetId) {
+  syncActivePresetState();
+  const preset = savedPresets.find(p => p.id === presetId);
+  if (!preset) return;
+  activePresetId = preset.id;
+  document.getElementById('presetNameInput').value = preset.name;
+  applyMixState(preset.state);
+  renderPresetsComparison();
+}
+
+function deletePresetById(presetId) {
+  savedPresets = savedPresets.filter(p => p.id !== presetId);
+  if (activePresetId === presetId) {
+    activePresetId = savedPresets.length ? savedPresets[0].id : null;
+  }
+  persistSavedPresets();
+  renderPresetsComparison();
+}
+
+function startNewPreset() {
+  syncActivePresetState();
+  const suggestedName = 'תמהיל ' + (savedPresets.length + 1);
+  const newId = 'preset_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+
+  const freshState = captureCurrentMixState();
+  savedPresets.push({
+    id: newId,
+    name: suggestedName,
+    state: freshState
+  });
+
+  activePresetId = newId;
+  document.getElementById('presetNameInput').value = suggestedName;
+  persistSavedPresets();
+  renderPresetsComparison();
+}
+
+function renderPresetsComparison() {
+  const chipsContainer = document.getElementById('savedPresetsChips');
+  const tableContainer = document.getElementById('presetsComparisonBody');
+  const exportBtn = document.getElementById('exportComparisonCsvBtn');
+
+  if (exportBtn) {
+    exportBtn.disabled = savedPresets.length === 0;
+  }
+
+  if (!savedPresets.length) {
+    chipsContainer.innerHTML = '<span class="note" style="margin:0">טרם נשמרו תמהילים. הזן שם לתמהיל ולחץ על "שמירה / עדכון תמהיל" כדי להשוות בין מספר תמהילים.</span>';
+    tableContainer.innerHTML = '<p class="note" style="margin:0">אין עדיין תמהילים שמורים להשוואה. שמור תמהיל ראשון ולאחר מכן צור תמהילים נוספים להשוואה.</p>';
+    renderPresetsMonthlyChart();
+    return;
+  }
+
+  chipsContainer.innerHTML = savedPresets.map(p => {
+    const isActive = p.id === activePresetId;
+    return `
+      <div class="preset-chip ${isActive ? 'active-chip' : ''}">
+        <span>${escapeHtml(p.name)}${isActive ? ' (פעיל)' : ''}</span>
+        <button type="button" class="load-chip-btn" onclick="loadPresetById('${p.id}')">טעינה</button>
+        <button type="button" class="del-chip-btn" onclick="deletePresetById('${p.id}')">×</button>
+      </div>
+    `;
+  }).join('');
+
+  const rowsHtml = savedPresets.map(p => {
+    const evalRes = evaluateMixState(p.state);
+    if (!evalRes.valid || evalRes.firstExpected === null) {
+      return `
+        <tr>
+          <td><strong>${escapeHtml(p.name)}</strong></td>
+          <td>${money(evalRes.totalLoan || 0)}</td>
+          <td colspan="5" style="color:#c24135">נתוני התמהיל אינם תקינים או אינם מסתכמים ל-100%</td>
+          <td>
+            <button type="button" class="row-action-btn" onclick="loadPresetById('${p.id}')">טעינה</button>
+            <button type="button" class="row-del-btn" onclick="deletePresetById('${p.id}')">מחיקה</button>
+          </td>
+        </tr>
+      `;
+    }
+
+    return `
+      <tr>
+        <td><strong>${escapeHtml(p.name)}</strong></td>
+        <td>${money(evalRes.totalLoan)}</td>
+        <td><strong>${money(evalRes.firstExpected)}</strong></td>
+        <td>${money(evalRes.lastExpected)}</td>
+        <td>${money(evalRes.maxPayment)}</td>
+        <td>${money(evalRes.minPayment)}</td>
+        <td><strong style="color:var(--green)">${money(evalRes.combinedTotal)}</strong></td>
+        <td>
+          <button type="button" class="row-action-btn" onclick="loadPresetById('${p.id}')">טעינה</button>
+          <button type="button" class="row-del-btn" onclick="deletePresetById('${p.id}')">מחיקה</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  tableContainer.innerHTML = `
+    <div class="comparison-table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>שם התמהיל</th>
+            <th>סכום הלוואה</th>
+            <th>החזר חודשי ראשון</th>
+            <th>החזר חודשי אחרון</th>
+            <th>החזר חודשי מקסימלי</th>
+            <th>החזר חודשי מינימלי</th>
+            <th>סך כל ההחזרים</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+
+  renderPresetsMonthlyChart();
+}
+
+function csvEscape(val) {
+  const str = String(val ?? '');
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+function exportPresetsComparisonCsv() {
+  if (!savedPresets.length) return;
+  syncActivePresetState();
+
+  const headers = [
+    'שם התמהיל',
+    'סכום הלוואה (₪)',
+    'החזר חודשי ראשון (₪)',
+    'החזר חודשי אחרון (₪)',
+    'החזר חודשי מקסימלי (₪)',
+    'החזר חודשי מינימלי (₪)',
+    'סך כל ההחזרים (₪)',
+    'קבועה לא צמודה (%)',
+    'ריבית קבועה לא צמודה (%)',
+    'שנים קבועה לא צמודה',
+    'משתנה לא צמודה (%)',
+    'ריבית+מרווח משתנה לא צמודה (%)',
+    'שנים משתנה לא צמודה',
+    'קבועה צמודת מדד (%)',
+    'ריבית קבועה צמודה (%)',
+    'שנים קבועה צמודה',
+    'משתנה צמודת מדד (%)',
+    'ריבית+מרווח משתנה צמודה (%)',
+    'שנים משתנה צמודה',
+    'פריים (%)',
+    'ריבית+מרווח פריים (%)',
+    'שנים פריים'
+  ];
+
+  const lines = [headers.map(csvEscape).join(',')];
+
+  savedPresets.forEach(p => {
+    const state = p.state || {};
+    const alloc = state.allocations || {};
+    const tr = state.tracks || {};
+    const evalRes = evaluateMixState(state);
+
+    const varRate = (Number(tr.variable?.rate ?? 0) + Number(tr.variable?.margin ?? 0)).toFixed(2);
+    const varIdxRate = (Number(tr.varIndexed?.rate ?? 0) + Number(tr.varIndexed?.margin ?? 0)).toFixed(2);
+    const primeRate = (Number(tr.prime?.rate ?? 0) + Number(tr.prime?.margin ?? 0)).toFixed(2);
+
+    const isValid = evalRes.valid && evalRes.firstExpected !== null;
+
+    const row = [
+      p.name,
+      Math.round(Number(state.totalLoan || 0)),
+      isValid ? Math.round(evalRes.firstExpected) : 'לא תקין',
+      isValid ? Math.round(evalRes.lastExpected) : 'לא תקין',
+      isValid ? Math.round(evalRes.maxPayment) : 'לא תקין',
+      isValid ? Math.round(evalRes.minPayment) : 'לא תקין',
+      isValid ? Math.round(evalRes.combinedTotal) : 'לא תקין',
+      Number(alloc.fixed ?? 0),
+      Number(tr.fixed?.rate ?? 0),
+      Number(tr.fixed?.years ?? 0),
+      Number(alloc.variable ?? 0),
+      varRate,
+      Number(tr.variable?.years ?? 0),
+      Number(alloc.indexed ?? 0),
+      Number(tr.indexed?.rate ?? 0),
+      Number(tr.indexed?.years ?? 0),
+      Number(alloc.varIndexed ?? 0),
+      varIdxRate,
+      Number(tr.varIndexed?.years ?? 0),
+      Number(alloc.prime ?? 0),
+      primeRate,
+      Number(tr.prime?.years ?? 0)
+    ];
+
+    lines.push(row.map(csvEscape).join(','));
+  });
+
+  const csvContent = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'השוואת_תמהילי_משכנתא.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ==================================================
+// הצגת תוצאות
+// ==================================================
+
+function renderResult(id,result) {
+
+  const element = document.getElementById('result-'+id);
+
+  if(!result) {
+    element.innerHTML =
+      '<div class="note">נא להזין נתונים תקינים.</div>';
+    return;
+  }
+
+  element.innerHTML = `
+    <div class="result-main">
+      <span>החזר חודשי ראשון</span>
+      <strong>${money(result.firstPayment)}</strong>
+    </div>
+
+    <div class="result-grid">
+
+      <div class="result-item">
+        <span>החזר חודשי אחרון</span>
+        <strong>${money(result.lastPayment)}</strong>
+      </div>
+
+      <div class="result-item">
+        <span>סכום הקרן המקורי</span>
+        <strong>${money(result.principal)}</strong>
+      </div>
+
+      <div class="result-item">
+        <span>סך הריבית</span>
+        <strong>${money(result.totalInterest)}</strong>
+      </div>
+
+      <div class="result-item">
+        <span>סך ההצמדה למדד</span>
+        <strong>${money(result.totalIndex)}</strong>
+      </div>
+
+      <div class="result-item total">
+        <span>סך כל ההחזרים לאורך התקופה</span>
+        <strong>${money(result.totalPaid)}</strong>
+      </div>
+
+    </div>
+
+    <button class="track-breakdown-btn" onclick="openMonthlyBreakdown('${id}')">
+      📋 פירוט חודשי למסלול (${trackMeta[id].name})
+    </button>
+  `;
+}
+
+// ==================================================
+// חישוב כל המסלולים וסיכום משולב
+// ==================================================
+
+function calculateAll() {
+
+  const currentState = captureCurrentMixState();
+  const evalRes = evaluateMixState(currentState);
+  trackMonthlyScheduleMap = {};
+
+  ids.forEach(id => {
+    const item = evalRes.resultsById[id];
+    renderResult(id, item.result);
+    trackMonthlyScheduleMap[id] = item.result && isValidYears(item.years)
+      ? item.result.monthlyRows
+      : null;
+  });
+
+  lastCombinedMonthlySchedule = evalRes.valid ? evalRes.combinedSchedule : null;
+
+  document.getElementById('summaryPrincipal').textContent =
+    money(currentState.totalLoan);
+
+  if(evalRes.valid) {
+    document.getElementById('combinedPayment').textContent =
+      money(evalRes.combinedFirst);
+
+    document.getElementById('combinedTotal').textContent =
+      money(evalRes.combinedTotal);
+  } else {
+    document.getElementById('combinedPayment').textContent =
+      'לא ניתן לחשב';
+
+    document.getElementById('combinedTotal').textContent =
+      'לא ניתן לחשב';
+  }
+
+  renderTracksComparisonChart();
+}
+
+// ==================================================
+// גרף השוואת החזר חודשי לאורך השנים בין התמהילים השמורים
+// ==================================================
+
+function renderPresetsMonthlyChart() {
+  const legendEl = document.getElementById('presetsMonthlyLegend');
+  const canvas = document.getElementById('presetsMonthlyChart');
+  if (!canvas || !legendEl) return;
+
+  const seriesList = [];
+  let maxYears = 1;
+
+  savedPresets.forEach((p, idx) => {
+    const evalRes = evaluateMixState(p.state || {});
+    if (!evalRes.valid || !evalRes.combinedSchedule || evalRes.combinedSchedule.length === 0) {
+      return;
+    }
+
+    const rows = evalRes.combinedSchedule;
+    const yearsCount = Math.ceil(rows.length / 12);
+    if (yearsCount > maxYears) maxYears = yearsCount;
+
+    const yearlyAvgMonthly = [];
+    for (let y = 0; y < yearsCount; y++) {
+      let sumYear = 0;
+      let countMonths = 0;
+      for (let m = y * 12; m < Math.min((y + 1) * 12, rows.length); m++) {
+        sumYear += rows[m].payment || 0;
+        countMonths++;
+      }
+      yearlyAvgMonthly.push(countMonths > 0 ? sumYear / countMonths : 0);
+    }
+
+    seriesList.push({
+      id: p.id,
+      name: p.name,
+      color: presetPalette[idx % presetPalette.length],
+      values: yearlyAvgMonthly
+    });
+  });
+
+  if (seriesList.length === 0) {
+    legendEl.innerHTML = '<span class="note" style="margin:0">שמור תמהילים תקינים כדי להציג גרף השוואת החזר חודשי לאורך השנים.</span>';
+  } else {
+    legendEl.innerHTML = seriesList.map(s => `
+      <div class="legend-item">
+        <span class="legend-dot" style="background:${s.color}"></span>
+        <span>${escapeHtml(s.name)}</span>
+      </div>
+    `).join('');
+  }
+
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(300, rect.width || 800);
+  const height = 360;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+  let maxVal = 0;
+  seriesList.forEach(s => {
+    s.values.forEach(val => {
+      if (val > maxVal) maxVal = val;
+    });
+  });
+  if (maxVal <= 0) maxVal = 5000;
+
+  const padLeft = 18;
+  const padRight = 76;
+  const padTop = 20;
+  const padBottom = 38;
+  const plotW = Math.max(60, width - padLeft - padRight);
+  const plotH = Math.max(60, height - padTop - padBottom);
+
+  ctx.font = '11px Heebo, Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+
+  const gridRows = 5;
+  for (let i = 0; i <= gridRows; i++) {
+    const ratio = i / gridRows;
+    const y = padTop + plotH - ratio * plotH;
+    const val = maxVal * ratio;
+
+    ctx.strokeStyle = '#e5eaf2';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(padLeft + plotW, y);
+    ctx.stroke();
+
+    ctx.fillStyle = '#718096';
+    const shortVal = val >= 1000000
+      ? (val / 1000000).toFixed(1) + 'M ₪'
+      : val >= 1000
+        ? Math.round(val / 1000) + 'K ₪'
+        : Math.round(val) + ' ₪';
+    ctx.fillText(shortVal, width - 6, y);
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  const stepX = maxYears > 1 ? plotW / (maxYears - 1) : 0;
+  const labelInterval = Math.max(1, Math.ceil(maxYears / 10));
+
+  for (let y = 0; y < maxYears; y++) {
+    const x = maxYears > 1 ? padLeft + y * stepX : padLeft + plotW / 2;
+    if (y % labelInterval === 0 || y === maxYears - 1) {
+      ctx.fillStyle = '#718096';
+      ctx.fillText('שנה ' + (y + 1), x, padTop + plotH + 10);
+    }
+  }
+
+  seriesList.forEach(s => {
+    if (!s.values || s.values.length === 0) return;
+
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+
+    s.values.forEach((val, idx) => {
+      const x = maxYears > 1 ? padLeft + idx * stepX : padLeft + plotW / 2;
+      const y = padTop + plotH - (val / maxVal) * plotH;
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+
+    ctx.stroke();
+  });
+
+  presetsMonthlyChartState = {
+    padLeft,
+    padRight,
+    padTop,
+    padBottom,
+    plotW,
+    plotH,
+    maxYears,
+    stepX,
+    seriesList
+  };
+}
+
+// ==================================================
+// גרף השוואה בין מסלולים לאורך השנים
+// ==================================================
+
+function renderTracksComparisonChart() {
+  const legendEl = document.getElementById('chartLegend');
+  legendEl.innerHTML = ids.map(id => `
+    <div class="legend-item">
+      <span class="legend-dot" style="background:${trackMeta[id].color}"></span>
+      <span>${trackMeta[id].name}</span>
+    </div>
+  `).join('');
+
+  const canvas = document.getElementById('tracksChart');
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.max(300, rect.width || 800);
+  const height = 360;
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+
+  let maxYears = 1;
+  const annualSeriesByTrack = {};
+
+  ids.forEach(id => {
+    const rows = trackMonthlyScheduleMap[id];
+    if (!rows || rows.length === 0) {
+      annualSeriesByTrack[id] = [];
+      return;
+    }
+    const yearsCount = Math.ceil(rows.length / 12);
+    if (yearsCount > maxYears) maxYears = yearsCount;
+
+    const yearlyTotals = [];
+    for (let y = 0; y < yearsCount; y++) {
+      let sumYear = 0;
+      for (let m = y * 12; m < Math.min((y + 1) * 12, rows.length); m++) {
+        sumYear += rows[m].payment || 0;
+      }
+      yearlyTotals.push(sumYear);
+    }
+    annualSeriesByTrack[id] = yearlyTotals;
+  });
+
+  let maxVal = 0;
+  ids.forEach(id => {
+    annualSeriesByTrack[id].forEach(val => {
+      if (val > maxVal) maxVal = val;
+    });
+  });
+
+  if (maxVal <= 0) maxVal = 10000;
+
+  const padLeft = 18;
+  const padRight = 76;
+  const padTop = 20;
+  const padBottom = 38;
+  const plotW = Math.max(60, width - padLeft - padRight);
+  const plotH = Math.max(60, height - padTop - padBottom);
+
+  ctx.font = '11px Heebo, Arial, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+
+  const gridRows = 5;
+  for (let i = 0; i <= gridRows; i++) {
+    const ratio = i / gridRows;
+    const y = padTop + plotH - ratio * plotH;
+    const val = maxVal * ratio;
+
+    ctx.strokeStyle = '#e5eaf2';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padLeft, y);
+    ctx.lineTo(padLeft + plotW, y);
+    ctx.stroke();
+
+    ctx.fillStyle = '#718096';
+    const shortVal = val >= 1000000
+      ? (val / 1000000).toFixed(1) + 'M ₪'
+      : val >= 1000
+        ? Math.round(val / 1000) + 'K ₪'
+        : Math.round(val) + ' ₪';
+    ctx.fillText(shortVal, width - 6, y);
+  }
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  const stepX = maxYears > 1 ? plotW / (maxYears - 1) : 0;
+  const labelInterval = Math.max(1, Math.ceil(maxYears / 10));
+
+  for (let y = 0; y < maxYears; y++) {
+    const x = maxYears > 1 ? padLeft + y * stepX : padLeft + plotW / 2;
+    if (y % labelInterval === 0 || y === maxYears - 1) {
+      ctx.fillStyle = '#718096';
+      ctx.fillText('שנה ' + (y + 1), x, padTop + plotH + 10);
+    }
+  }
+
+  ids.forEach(id => {
+    const arr = annualSeriesByTrack[id];
+    if (!arr || arr.length === 0) return;
+
+    ctx.strokeStyle = trackMeta[id].color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+
+    arr.forEach((val, idx) => {
+      const x = maxYears > 1 ? padLeft + idx * stepX : padLeft + plotW / 2;
+      const y = padTop + plotH - (val / maxVal) * plotH;
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+
+    ctx.stroke();
+  });
+
+  chartState = {
+    padLeft,
+    padRight,
+    padTop,
+    padBottom,
+    plotW,
+    plotH,
+    maxYears,
+    stepX,
+    annualSeriesByTrack
+  };
+}
+
+const tracksCanvas = document.getElementById('tracksChart');
+const presetsMonthlyCanvas = document.getElementById('presetsMonthlyChart');
+const chartTooltip = document.getElementById('chartTooltip');
+
+presetsMonthlyCanvas.addEventListener('mousemove', event => {
+  if (!presetsMonthlyChartState || !presetsMonthlyChartState.seriesList.length) return;
+  const rect = presetsMonthlyCanvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+  const st = presetsMonthlyChartState;
+
+  if (
+    mouseX < st.padLeft - 10 ||
+    mouseX > st.padLeft + st.plotW + 10 ||
+    mouseY < st.padTop - 10 ||
+    mouseY > st.padTop + st.plotH + 10
+  ) {
+    chartTooltip.style.display = 'none';
+    return;
+  }
+
+  let yearIdx = 0;
+  if (st.maxYears > 1 && st.stepX > 0) {
+    yearIdx = Math.round((mouseX - st.padLeft) / st.stepX);
+    yearIdx = Math.max(0, Math.min(st.maxYears - 1, yearIdx));
+  }
+
+  let rows = `<div style="font-weight:700;margin-bottom:4px">שנה ${yearIdx + 1} (החזר חודשי ממוצע)</div>`;
+  st.seriesList.forEach(s => {
+    const val = s.values[yearIdx] ?? 0;
+    rows += `
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${s.color};margin-left:5px"></span>${escapeHtml(s.name)}</span>
+        <strong>${money(val)}</strong>
+      </div>
+    `;
+  });
+
+  chartTooltip.innerHTML = rows;
+  chartTooltip.style.display = 'block';
+  chartTooltip.style.left = Math.min(window.innerWidth - 220, event.clientX + 14) + 'px';
+  chartTooltip.style.top = Math.min(window.innerHeight - 170, event.clientY + 14) + 'px';
+});
+
+presetsMonthlyCanvas.addEventListener('mouseleave', () => {
+  chartTooltip.style.display = 'none';
+});
+
+tracksCanvas.addEventListener('mousemove', event => {
+  if (!chartState) return;
+  const rect = tracksCanvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  if (
+    mouseX < chartState.padLeft - 10 ||
+    mouseX > chartState.padLeft + chartState.plotW + 10 ||
+    mouseY < chartState.padTop - 10 ||
+    mouseY > chartState.padTop + chartState.plotH + 10
+  ) {
+    chartTooltip.style.display = 'none';
+    return;
+  }
+
+  let yearIdx = 0;
+  if (chartState.maxYears > 1 && chartState.stepX > 0) {
+    yearIdx = Math.round((mouseX - chartState.padLeft) / chartState.stepX);
+    yearIdx = Math.max(0, Math.min(chartState.maxYears - 1, yearIdx));
+  }
+
+  let rows = `<div style="font-weight:700;margin-bottom:4px">שנה ${yearIdx + 1} (החזר שנתי)</div>`;
+  ids.forEach(id => {
+    const val = chartState.annualSeriesByTrack[id][yearIdx] || 0;
+    rows += `
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${trackMeta[id].color};margin-left:5px"></span>${trackMeta[id].name}</span>
+        <strong>${money(val)}</strong>
+      </div>
+    `;
+  });
+
+  chartTooltip.innerHTML = rows;
+  chartTooltip.style.display = 'block';
+  chartTooltip.style.left = Math.min(window.innerWidth - 220, event.clientX + 14) + 'px';
+  chartTooltip.style.top = Math.min(window.innerHeight - 170, event.clientY + 14) + 'px';
+});
+
+tracksCanvas.addEventListener('mouseleave', () => {
+  chartTooltip.style.display = 'none';
+});
+
+window.addEventListener('resize', () => {
+  renderTracksComparisonChart();
+  renderPresetsMonthlyChart();
+});
+
+// ==================================================
+// חלון פירוט חודשי, נתונים מסכמים וייצוא CSV
+// ==================================================
+
+function getScheduleForScope(scope) {
+  if (scope === 'combined') {
+    return {
+      title: 'פירוט החזר חודשי ונתונים מסכמים (כלל המשכנתא)',
+      fileName: 'פירוט_החזרי_משכנתא_כולל.csv',
+      rows: lastCombinedMonthlySchedule
+    };
+  }
+
+  const meta = trackMeta[scope];
+  return {
+    title: `פירוט החזר חודשי – ${meta ? meta.name : scope}`,
+    fileName: `פירוט_החזרי_משכנתא_${scope}.csv`,
+    rows: trackMonthlyScheduleMap[scope] || null
+  };
+}
+
+function openMonthlyBreakdown(scope = 'combined') {
+  activeBreakdownScope = scope;
+  const info = getScheduleForScope(scope);
+  const container = document.getElementById('breakdownContent');
+  const exportBtn = document.getElementById('exportCsvBtn');
+  document.getElementById('breakdownModalTitle').textContent = info.title;
+
+  if(!info.rows || info.rows.length === 0) {
+    container.innerHTML =
+      '<p class="note">יש להזין סכום משכנתא תקין, מספר שנים תקין (1–50) בכל מסלול וחלוקת אחוזים המסתכמת ב-100% כדי להציג פירוט חודשי.</p>';
+    exportBtn.disabled = true;
+    document.getElementById('breakdownModal').classList.add('open');
+    return;
+  }
+
+  exportBtn.disabled = false;
+
+  const rows = info.rows;
+  const payments = rows.map(r => r.payment);
+  const firstExpected = payments[0];
+  const lastExpected = payments[payments.length - 1];
+  const maxPayment = Math.max(...payments);
+  const minPayment = Math.min(...payments);
+
+  let rowsHtml = '';
+  for(let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    rowsHtml += `
+      <tr>
+        <td>חודש ${r.month} (שנה ${r.year}, חודש ${r.monthInYear})</td>
+        <td><strong>${money(r.payment)}</strong></td>
+        <td>${money(r.principalPaid)}</td>
+        <td>${money(r.interestAndIndexPaid)}</td>
+        <td>${money(r.endingBalance)}</td>
+      </tr>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span>החזר חודשי ראשון צפוי</span>
+        <strong>${money(firstExpected)}</strong>
+      </div>
+      <div class="stat-box">
+        <span>החזר חודשי אחרון צפוי</span>
+        <strong>${money(lastExpected)}</strong>
+      </div>
+      <div class="stat-box">
+        <span>החזר חודש מקסימלי</span>
+        <strong>${money(maxPayment)}</strong>
+      </div>
+      <div class="stat-box">
+        <span>החזר חודש מינימלי</span>
+        <strong>${money(minPayment)}</strong>
+      </div>
+    </div>
+
+    <div class="year-table-wrap">
+      <table class="year-table">
+        <thead>
+          <tr>
+            <th>חודש</th>
+            <th>החזר חודשי צפוי</th>
+            <th>קרן שולמה</th>
+            <th>ריבית והצמדה</th>
+            <th>יתרת קרן לסוף חודש</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById('breakdownModal').classList.add('open');
+}
+
+function exportMonthlyCsv() {
+  const info = getScheduleForScope(activeBreakdownScope);
+  if(!info.rows || info.rows.length === 0) {
+    return;
+  }
+
+  const lines = [
+    ['חודש','שנה','חודש בשנה','החזר חודשי צפוי (₪)','קרן שולמה (₪)','ריבית והצמדה (₪)','יתרת קרן לסוף חודש (₪)'].join(',')
+  ];
+
+  for(let i = 0; i < info.rows.length; i++) {
+    const r = info.rows[i];
+    lines.push([
+      r.month,
+      r.year,
+      r.monthInYear,
+      Math.round(r.payment),
+      Math.round(r.principalPaid),
+      Math.round(r.interestAndIndexPaid),
+      Math.round(r.endingBalance)
+    ].join(','));
+  }
+
+  const csvContent = '\uFEFF' + lines.join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = info.fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function closeMonthlyBreakdown() {
+  document.getElementById('breakdownModal').classList.remove('open');
+}
+
+document.getElementById('breakdownModal')
+  .addEventListener('click', event => {
+    if(event.target.id === 'breakdownModal') {
+      closeMonthlyBreakdown();
+    }
+  });
+
+// ==================================================
+// פתיחת חלון התחזית
+// ==================================================
+
+function openSchedule(type) {
+
+  currentSchedule = type;
+
+  const trackId = scheduleToTrack[type] || type;
+  yearsInModal = getTrackYears(trackId);
+
+  if(!isValidYears(yearsInModal)) {
+    alert('יש להזין מספר שנים תקין (בין 1 ל-50) עבור המסלול');
+    return;
+  }
+
+  temporaryData = JSON.parse(
+    JSON.stringify(scheduleData[type])
+  );
+
+  while(temporaryData.values.length < yearsInModal) {
+    temporaryData.values.push(
+      isIndexSchedule(type) ? 2 : 0
+    );
+  }
+
+  document.getElementById('modalTitle').textContent =
+    titles[type];
+
+  document.getElementById('averageLabel').textContent =
+    isIndexSchedule(type)
+      ? 'עליית מדד שנתית ממוצעת (%)'
+      : 'שינוי ריבית שנתי ממוצע (%)';
+
+  document.getElementById('tableLabel').textContent =
+    labels[type];
+
+  document.getElementById('tableExplanation').textContent =
+    isIndexSchedule(type)
+      ? 'הזן את אחוז עליית המדד הצפוי בכל שנה. ההצמדה תחושב מדי חודש.'
+      : 'הזן את השינוי בריבית בכל שנה בנפרד. השינוי מתווסף לריבית של השנה הקודמת.';
+
+  document.getElementById('averageValue').value =
+    temporaryData.average;
+
+  setMode(temporaryData.mode);
+
+  document.getElementById('scheduleModal')
+    .classList.add('open');
+}
+
+// ==================================================
+// בניית טבלת השנים
+// ==================================================
+
+function buildYearRows() {
+
+  const tbody = document.getElementById('yearRows');
+
+  tbody.innerHTML = '';
+
+  for(let year=1; year<=yearsInModal; year++) {
+
+    const tr = document.createElement('tr');
+
+    const tdYear = document.createElement('td');
+
+    tdYear.textContent = 'שנה '+year;
+
+    const tdValue = document.createElement('td');
+
+    const input = document.createElement('input');
+
+    input.type = 'number';
+    input.step = '0.1';
+    input.dataset.year = year;
+
+    input.value = temporaryData.values[year-1] ?? 0;
+
+    if(!isIndexSchedule(currentSchedule) && year === 1) {
+      input.value = 0;
+      input.disabled = true;
+      input.title = 'השנה הראשונה היא שנת הריבית ההתחלתית';
+    }
+
+    input.addEventListener('input',() => {
+      temporaryData.values[year-1] = Number(input.value);
+    });
+
+    tdValue.appendChild(input);
+
+    tr.appendChild(tdYear);
+    tr.appendChild(tdValue);
+
+    tbody.appendChild(tr);
+  }
+}
+
+// ==================================================
+// מעבר בין מצבי תחזית
+// ==================================================
+
+function setMode(mode) {
+
+  temporaryData.mode = mode;
+
+  document.getElementById('annualMode')
+    .classList.toggle('active',mode==='annual');
+
+  document.getElementById('averageMode')
+    .classList.toggle('active',mode==='average');
+
+  document.getElementById('annualContent').style.display =
+    mode==='annual' ? 'block' : 'none';
+
+  document.getElementById('averageContent').style.display =
+    mode==='average' ? 'block' : 'none';
+
+  if(mode==='annual') {
+    buildYearRows();
+  }
+}
+
+// ==================================================
+// שמירת התחזית
+// ==================================================
+
+function saveSchedule() {
+
+  if(temporaryData.mode === 'average') {
+
+    const average = Number(
+      document.getElementById('averageValue').value
+    );
+
+    if(!Number.isFinite(average)) {
+      alert('נא להזין תחזית תקינה');
+      return;
+    }
+
+    temporaryData.average = average;
+
+  } else {
+
+    const inputs = document.querySelectorAll(
+      '#yearRows input'
+    );
+
+    inputs.forEach(input => {
+      const year = Number(input.dataset.year);
+
+      temporaryData.values[year-1] =
+        input.disabled ? 0 : Number(input.value);
+    });
+  }
+
+  scheduleData[currentSchedule] =
+    JSON.parse(JSON.stringify(temporaryData));
+
+  closeSchedule();
+
+  if (activePresetId) {
+    syncActivePresetState();
+    renderPresetsComparison();
+  }
+
+  calculateAll();
+}
+
+// ==================================================
+// סגירת חלון
+// ==================================================
+
+function closeSchedule() {
+
+  document.getElementById('scheduleModal')
+    .classList.remove('open');
+
+  currentSchedule = null;
+  temporaryData = null;
+}
+
+document.getElementById('scheduleModal')
+  .addEventListener('click',event => {
+
+    if(event.target.id === 'scheduleModal') {
+      closeSchedule();
+    }
+
+  });
+
+// ==================================================
+// האזנה לשינויים
+// ==================================================
+
+document.querySelectorAll('input').forEach(input => {
+
+  if(input.id === 'averageValue' || input.id === 'presetNameInput') return;
+
+  const refreshCalculations = () => updateAllocation(true);
+  input.addEventListener('input', refreshCalculations);
+  input.addEventListener('change', refreshCalculations);
+
+});
+
+loadTheme();
+(async function initializeCalculator() {
+  try {
+    await loadSavedPresetsFromServer();
+    if (savedPresets.length > 0) {
+      activePresetId = savedPresets[0].id;
+      document.getElementById('presetNameInput').value = savedPresets[0].name;
+      applyMixState(savedPresets[0].state);
+    } else {
+      updateAllocation(false);
+    }
+    renderPresetsComparison();
+  } catch (error) {
+    console.error(error);
+    alert('אירעה שגיאה בטעינת התמהילים מהשרת. רענן את הדף או התחבר מחדש.');
+    updateAllocation(false);
+    renderPresetsComparison();
+  }
+})();
+
+</script>
+
+</body>
+</html>
+
+<!-- Injection By NetFree -->
+<script src="https://netfree.link/injection-script/note-in-site.js" type="text/javascript" async  id="netfree-note-site" jsondata="%7B%22noteSite%22:%22%D7%9B%D7%93%D7%99%20%D7%A9%D7%94%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%20%D7%94%D7%96%D7%94%20%D7%99%D7%97%D7%96%D7%A8%D7%95%20%D7%9E%D7%91%D7%93%D7%99%D7%A7%D7%94%2C%20%D7%99%D7%A9%20%D7%9C%D7%94%D7%92%D7%93%D7%99%D7%A8%20%5C%22%D7%90%D7%A4%D7%A9%D7%A8%20%D7%9C%D7%A9%D7%9C%D7%95%D7%97%20%D7%9C%D7%91%D7%93%D7%99%D7%A7%D7%94%20%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA%20%D7%91%D7%90%D7%AA%D7%A8%D7%99%D7%9D%20%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D%2C%20%D7%91%D7%9E%D7%A7%D7%95%D7%9D%20%D7%9C%D7%97%D7%A1%D7%95%D7%9D%20%D7%90%D7%95%D7%AA%D7%9F%5C%22%20%D7%91%D7%94%D7%92%D7%93%D7%A8%D7%95%D7%AA%20%D7%A1%D7%99%D7%A0%D7%95%D7%9F%20%5B%5B%D7%A6%D7%90%D7%98_AI_%D7%91%D7%A0%D7%98%D7%A4%D7%A8%D7%99%7C%D7%94%D7%99%D7%9B%D7%A0%D7%A1%D7%95%20%D7%9C%D7%9B%D7%90%D7%9F%20%D7%9C%D7%94%D7%A1%D7%91%D7%A8%20%D7%9E%D7%A4%D7%95%D7%A8%D7%98%5D%5D%22%2C%22noteSiteEn%22:%22For%20images%20on%20this%20website%20to%20work%20you%20need%20to%20set%20%5C%22Allow%20images%20on%20private%20sites%20to%20be%20sent%20for%20review%2C%20instead%20of%20blocking%20them%5C%22%20%5B%5BAI_Chats_in_NetFree%7CClick%20here%20to%20read%20more%5D%5D%22%7D"></script><script src="//netfree.link/injection-script/go-payment.js" type="text/javascript" async ></script>
+<script src="//netfree.link/injection-script/popup-card-init.js" type="text/javascript" async ></script>
